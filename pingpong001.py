@@ -1,3 +1,8 @@
+"""
+Created by Warren Lee
+AP CSP Create Task: Two-Player Pong Game
+"""
+
 from graphics import *
 from random import *
 
@@ -14,7 +19,7 @@ PADHT = 50
 
 # instantiate window and choose background color
 screen = GraphWin("2 Player Pong - Warren Lee", WIDTH, HEIGHT)
-colors = ["Light Gray", "Green", "White","Gold","Aquamarine","Light Pink", "Tan"]
+colors = ["Light Gray", "Green", "White", "Gold", "Aquamarine", "Light Pink", "Tan"]
 for i in colors:
     print(i)
 choose = str(input("Background color: "))
@@ -49,32 +54,31 @@ def main():
         #move ball
         ball.move(xvelocity, yvelocity)
 
+        # moves the paddles
+        padMove(pad1, pad2)
+
         # get (x,y) of the ball
         centerBall = ball.getCenter()
         xBall = centerBall.getX()
         yBall = centerBall.getY()
 
-
         # bounce off edge of window
         if checkTop(yBall):
             yvelocity = -yvelocity
-        if checkSide(xBall):
-            #ends game when the ball hits the sides
-            time.sleep(0.5)
-            ball.undraw()
-            gameover(label,gg)
-            time.sleep(1)
-            screen.close()
+
+        # checks if the paddles hit the ball
+        if padHit(pad1, pad2, xBall, yBall):
+            pad1.setFill("red")
+            pad2.setFill("blue")
+            score += 1
+            xvelocity = -xvelocity
+            updateScoreboard(label, score)
+        # ends game when the ball hits the sides
+        if checkSides(xBall):
+            gameover(label,gg,ball,screen)
             exit(0)
 
-        padMove(pad1,pad2)
-
-        if padHit(pad1,pad2, xBall, yBall):
-            xvelocity = -xvelocity
-            score += 1
-            updateScoreboard(label, score)
-
-
+#separate child functions
 def initScoreboard():
    x = WIDTH / 2
    y = HEIGHT / 4
@@ -85,31 +89,12 @@ def initScoreboard():
    label.draw(screen)
    return label
 
-def updateScoreboard(label, score):
-   label.setText(score)
-   return label
-
-def gameover(label,gg):
-    label.setTextColor("Red")
-    label.setText(gg)
-    return label
-
 def initBall():
    center = Point(350, 200)
    ball = Circle(center, RADIUS)
    ball.setFill("black")
    ball.draw(screen)
    return ball
-
-def checkTop(yBall):
-    while (yBall < 0 or yBall > 400):
-        return True
-    return False
-
-def checkSide(xBall):
-    while(xBall < 0 or xBall > 700):
-        return True
-    return False
 
 def initPaddle1():
     paddle = Rectangle(Point(100,175), Point(100+PADWIDTH,175+PADHT))
@@ -143,22 +128,51 @@ def padMove(pad1,pad2):
         pad2.move(0, 20)
 
 def padHit(pad1, pad2, xBall, yBall):
-#vars for pad1
-   pointPaddle1 = pad1.getP1()
-   xPaddle1 = pointPaddle1.getX()
-   yPaddle1 = pointPaddle1.getY()
-#vars for pad2
-   pointPaddle2 = pad2.getP1()
-   xPaddle2 = pointPaddle2.getX()
-   yPaddle2 = pointPaddle2.getY()
-#check if the ball is touching pad1 or pad2
-   if (xBall + RADIUS >= xPaddle1 and xBall - RADIUS <= (
-               xPaddle1 + PADWIDTH) and yPaddle1 - yBall < 0 and yPaddle1 - yBall > -50) or (
-                xBall + RADIUS >= xPaddle2 and xBall - RADIUS <= (
-                xPaddle2 - PADWIDTH) and yPaddle2 - yBall < 0 and yPaddle2 - yBall > -50):
+    pointPaddle1 = pad1.getP1()
+    xPaddle1 = pointPaddle1.getX()
+    yPaddle1 = pointPaddle1.getY()
+    pointPaddle2 = pad2.getP1()
+    xPaddle2 = pointPaddle2.getX()
+    yPaddle2 = pointPaddle2.getY()
+    if (xBall + RADIUS >= xPaddle1 and
+        xBall - RADIUS <= (xPaddle1 + PADWIDTH)
+        and yPaddle1 - yBall < 0 and yPaddle1 - yBall > -50
+        ):
+        pad1.setFill("green")
+        return True
+
+    elif (xBall + RADIUS >= xPaddle2 - PADWIDTH and
+          xBall + RADIUS <= (xPaddle2 + PADWIDTH)
+          and yPaddle2 - yBall < 0 and yPaddle2 - yBall > -50
+        ):
+       pad2.setFill("green")
        return True
-   else:
-       return False
+
+    else:
+        return False
+
+def checkTop(yBall):
+    while (yBall < 0 or yBall > 400):
+        return True
+    return False
+
+def checkSides(xBall):
+    while(xBall < 0 or xBall > 700):
+        time.sleep(0.5)
+        return True
+    return False
+
+def updateScoreboard(label, score):
+    label.setText(score)
+    return label
+
+def gameover(label,gg,ball,screen):
+    ball.undraw()
+    label.setTextColor("Red")
+    label.setText(gg)
+    time.sleep(1)
+    screen.close()
+    return label
 
 if __name__ == "__main__":
    main()
