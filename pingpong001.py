@@ -1,5 +1,4 @@
 """
-Created by Warren Lee
 AP CSP Create Task: Two-Player Pong Game
 """
 
@@ -18,7 +17,7 @@ PADWIDTH = 10
 PADHT = 50
 
 # instantiate window and choose background color
-screen = GraphWin("2 Player Pong - Warren Lee", WIDTH, HEIGHT)
+screen = GraphWin("2 Player Pong", WIDTH, HEIGHT)
 colors = ["Light Gray", "Green", "White", "Gold", "Aquamarine", "Light Pink", "Tan"]
 for i in colors:
     print(i)
